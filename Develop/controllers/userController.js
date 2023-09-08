@@ -1,35 +1,35 @@
-const { Course, Student } = require('../models');
+const { Thought, User } = require('../models');
 
 module.exports = {
   // Get all courses
-  async getCourses(req, res) {
+  async getUsers(req, res) {
     try {
-      const courses = await Course.find();
-      res.json(courses);
+      const user = await User.find().populate("thoughts").populate("friends");
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }
   },
   // Get a course
-  async getSingleCourse(req, res) {
+  async getSingleUser(req, res) {
     try {
-      const course = await Course.findOne({ _id: req.params.courseId })
-        .select('-__v');
+      const user = await User.findOne({ _id: req.params.userid }).populate("thoughts").populate("friends")
+        
 
-      if (!course) {
-        return res.status(404).json({ message: 'No course with that ID' });
+      if (!user) {
+        return res.status(404).json({ message: 'No user with that ID' });
       }
 
-      res.json(course);
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
     }
   },
   // Create a course
-  async createCourse(req, res) {
+  async createUser(req, res) {
     try {
-      const course = await Course.create(req.body);
-      res.json(course);
+      const user = await User.create(req.body);
+      res.json(user);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
