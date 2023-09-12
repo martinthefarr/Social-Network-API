@@ -1,17 +1,17 @@
 // ObjectId() method for converting studentId string into an ObjectId for querying database
 const { ObjectId } = require('mongoose').Types;
-const { Student, Course } = require('../models');
+const { Thought, User } = require('../models');
 
 // TODO: Create an aggregate function to get the number of students overall
 const headCount = async () => {
   // Your code here
-  const numberOfStudents = await Student.aggregate();
-  return numberOfStudents;
+  const numberOfThoughts = await Thought.aggregate();
+  return numberOfThoughts;
 }
 
 // Execute the aggregate method on the Student model and calculate the overall grade by using the $avg operator
-const grade = async (studentId) =>
-  Student.aggregate([
+const grade = async (thoughtID) =>
+  Thought.aggregate([
     // TODO: Ensure we include only the student who can match the given ObjectId using the $match operator
     {
       // Your code here
@@ -27,21 +27,21 @@ const grade = async (studentId) =>
 
 module.exports = {
   // Get all students
-  async getStudents(req, res) {
+  async getThoughts(req, res) {
     try {
-      const students = await Student.find();
-      const studentObj = {
+      const thoughts = await thought.find();
+      const thoughtObj = {
         students,
         headCount: await headCount(),
       };
-      return res.json(studentObj);
+      return res.json(thoughtObj);
     } catch (err) {
       console.log(err);
       return res.status(500).json(err);
     }
   },
   // Get a single student
-  async getSingleStudent(req, res) {
+  async getSingleThought(req, res) {
     try {
       const student = await Student.findOne({ _id: req.params.studentId })
         .select('-__v')
@@ -61,7 +61,7 @@ module.exports = {
     }
   },
   // create a new student
-  async createStudent(req, res) {
+  async createThought(req, res) {
     try {
       const student = await Student.create(req.body);
       res.json(student);
@@ -70,7 +70,7 @@ module.exports = {
     }
   },
   // Delete a student and remove them from the course
-  async deleteStudent(req, res) {
+  async deleteThought(req, res) {
     try {
       const student = await Student.findOneAndRemove({ _id: req.params.studentId });
 

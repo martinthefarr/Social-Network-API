@@ -1,7 +1,8 @@
 const { Thought, User } = require('../models');
+const { getThougths } = require('./thoughtController');
 
 module.exports = {
-  // Get all courses
+  // Get all users
   async getUsers(req, res) {
     try {
       const user = await User.find().populate("thoughts").populate("friends");
@@ -10,10 +11,10 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Get a course
+  // Get a user
   async getSingleUser(req, res) {
     try {
-      const user = await User.findOne({ _id: req.params.userid }).populate("thoughts").populate("friends")
+      const user = await User.findOne({ _id: req.params.userId }).populate("thoughts").populate("friends")
         
 
       if (!user) {
@@ -25,7 +26,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Create a course
+  // Create a user
   async createUser(req, res) {
     try {
       const user = await User.create(req.body);
@@ -35,37 +36,73 @@ module.exports = {
       return res.status(500).json(err);
     }
   },
-  // Delete a course
-  async deleteCourse(req, res) {
+  // Delete a user
+  async deleteUser(req, res) {
     try {
-      const course = await Course.findOneAndDelete({ _id: req.params.courseId });
+      const user = await User.findOneAndDelete({ _id: req.params.userId });
 
-      if (!course) {
-        return res.status(404).json({ message: 'No course with that ID' });
+      if (!user) {
+        return res.status(404).json({ message: 'No user with that ID' });
       }
 
-      await Student.deleteMany({ _id: { $in: course.students } });
-      res.json({ message: 'Course and students deleted!' });
+      await Thought.deleteMany({ _id: { $in: user.thoughts } });
+      res.json({ message: 'Thought and user deleted!' });
     } catch (err) {
       res.status(500).json(err);
     }
   },
-  // Update a course
-  async updateCourse(req, res) {
+  // Update a user
+  async updateUser(req, res) {
     try {
-      const course = await Course.findOneAndUpdate(
-        { _id: req.params.courseId },
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
         { $set: req.body },
         { runValidators: true, new: true }
       );
 
-      if (!course) {
-        return res.status(404).json({ message: 'No course with this id!' });
+      if (!user) {
+        return res.status(404).json({ message: 'No user with this id!' });
       }
 
-      res.json(course);
+      res.json(user);
     } catch (err) {
       res.status(500).json(err);
+    }
+  },
+  async createFriend(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        {$addToSet: {freinds: req.params.friendId}},
+        { runValidators: true, new: true }
+      );
+      
+      if (!user) {
+        return res.status(404).json({ message: 'No user with this id!' });
+      }
+
+      res.json(user);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
+  async deleteFriend(req, res) {
+    try {
+      const user = await User.findOneAndUpdate(
+        { _id: req.params.userId },
+        {$pull: {freinds: req.params.friendId}},
+        { runValidators: true, new: true }
+      );
+
+      if (!user) {
+        return res.status(404).json({ message: 'No user with this id!' });
+      }
+
+      res.json(user);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
     }
   },
 };
