@@ -59,5 +59,41 @@ module.exports = {
       res.status(500).json(err);
     }
   },
+  async createReaction(req, res) {
+    try {
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.params.ThoughtId },
+        {$addToSet: {reactions: req.params.createReactionId}},
+        { runValidators: true, new: true }
+      );
+      
+      if (!thought) {
+        return res.status(404).json({ message: 'No thought with this id!' });
+      }
+
+      res.json(thought);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
+  async deleteReaction(req, res) {
+    try {
+      const thought = await Thought.findOneAndUpdate(
+        { _id: req.params.userId },
+        {$pull: {freinds: req.params.reactionId}},
+        { runValidators: true, new: true }
+      );
+
+      if (!thought) {
+        return res.status(404).json({ message: 'No user with this id!' });
+      }
+
+      res.json(thought);
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json(err);
+    }
+  },
 
 };
