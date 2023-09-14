@@ -11,7 +11,7 @@ module.exports = {
       res.status(500).json(err);
     }
   },
-  // Get a user
+  // Get a single user
   async getSingleUser(req, res) {
     try {
       const user = await User.findOne({ _id: req.params.userId }).populate("thoughts").populate("friends")
@@ -48,6 +48,7 @@ module.exports = {
       await Thought.deleteMany({ _id: { $in: user.thoughts } });
       res.json({ message: 'Thought and user deleted!' });
     } catch (err) {
+      console.log(err)
       res.status(500).json(err);
     }
   },
